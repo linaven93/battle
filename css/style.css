@@ -1,0 +1,33 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f5f5f5;
+}
+
+.controls {
+  margin: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.arena {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  width: 200px;
+  border-radius: 10px;
+}
+
+#log {
+  margin-top: 20px;
+  min-height: 50px;
+}
