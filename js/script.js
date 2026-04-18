@@ -23,6 +23,22 @@ async function fetchCharacters() {
   }
 }
 
+function createFighter(character) {
+  let type = "Student";
+  let hp = 500;
+
+  if (character.hogwartsStaff) {
+    type = "Teacher";
+    hp = 800;
+  }
+
+  return {
+    ...character,
+    type,
+    hp,
+  };
+}
+
 function summonRandomFighters() {
   let randomIndex1 = Math.floor(Math.random() * characters.length);
   let randomIndex2 = Math.floor(Math.random() * characters.length);
@@ -31,8 +47,9 @@ function summonRandomFighters() {
     randomIndex2 = Math.floor(Math.random() * characters.length);
   }
 
-  fighter1 = { ...characters[randomIndex1], hp: 100 };
-  fighter2 = { ...characters[randomIndex2], hp: 100 };
+  fighter1 = createFighter(characters[randomIndex1]);
+  fighter2 = createFighter(characters[randomIndex2]);
+
   currentTurn = 1;
 
   renderFighters();
@@ -44,6 +61,7 @@ function renderFighters() {
     <h2>Wizard 1</h2>
     <img src="${fighter1.image}" alt="${fighter1.name}" width="150">
     <p>Name: ${fighter1.name}</p>
+    <p>Type: ${fighter1.type}</p>
     <p>HP: ${fighter1.hp}</p>
   `;
 
@@ -51,6 +69,7 @@ function renderFighters() {
     <h2>Wizard 2</h2>
     <img src="${fighter2.image}" alt="${fighter2.name}" width="150">
     <p>Name: ${fighter2.name}</p>
+    <p>Type: ${fighter2.type}</p>
     <p>HP: ${fighter2.hp}</p>
   `;
 }
@@ -64,7 +83,10 @@ summonBtn.addEventListener("click", () => {
 });
 
 attackBtn.addEventListener("click", () => {
-  if (!fighter1 || !fighter2) return;
+  if (!fighter1 || !fighter2) {
+    logDiv.innerHTML = "<p>Summon fighters first.</p>";
+    return;
+  }
 
   if (fighter1.hp === 0 || fighter2.hp === 0) {
     logDiv.innerHTML = "<p>The battle is over. Summon new fighters.</p>";
