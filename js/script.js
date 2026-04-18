@@ -9,6 +9,7 @@ let characters = [];
 let fighter1;
 let fighter2;
 let currentTurn = 1;
+let spells = [];
 
 async function fetchCharacters() {
   try {
@@ -17,9 +18,21 @@ async function fetchCharacters() {
 
     characters = data.filter((character) => character.name && character.image);
 
+    await fetchSpells();
     summonRandomFighters();
   } catch (error) {
     logDiv.innerHTML = "<p>Something went wrong.</p>";
+  }
+}
+
+async function fetchSpells() {
+  try {
+    const response = await fetch("https://hp-api.onrender.com/api/spells");
+    const data = await response.json();
+
+    spells = data;
+  } catch (error) {
+    console.log("Error fetching spells:", error);
   }
 }
 
@@ -93,7 +106,21 @@ attackBtn.addEventListener("click", () => {
     return;
   }
 
-  const damage = Math.floor(Math.random() * 20) + 5;
+  if (spells.length === 0) {
+    logDiv.innerHTML = "<p>Spells not loaded yet.</p>";
+    return;
+  }
+
+  const randomSpell = spells[Math.floor(Math.random() * spells.length)];
+  let damage = Math.floor(Math.random() * 60) + 30;
+
+  if (currentTurn === 1 && fighter1.type === "Teacher") {
+    damage = Math.floor(damage * 1.1);
+  }
+
+  if (currentTurn === 2 && fighter2.type === "Teacher") {
+    damage = Math.floor(damage * 1.1);
+  }
 
   if (currentTurn === 1) {
     fighter2.hp -= damage;
@@ -102,11 +129,11 @@ attackBtn.addEventListener("click", () => {
     renderFighters();
 
     if (fighter2.hp === 0) {
-      logDiv.innerHTML = `<p>${fighter1.name} hits ${fighter2.name} for ${damage} damage and wins!</p>`;
+      logDiv.innerHTML = `<p>${fighter1.name} casts ${randomSpell.name} and hits ${fighter2.name} for ${damage} damage and wins!</p>`;
       return;
     }
 
-    logDiv.innerHTML = `<p>${fighter1.name} hits ${fighter2.name} for ${damage} damage!</p>`;
+    logDiv.innerHTML = `<p>${fighter1.name} casts ${randomSpell.name} and hits ${fighter2.name} for ${damage} damage!</p>`;
     currentTurn = 2;
   } else {
     fighter1.hp -= damage;
@@ -115,11 +142,11 @@ attackBtn.addEventListener("click", () => {
     renderFighters();
 
     if (fighter1.hp === 0) {
-      logDiv.innerHTML = `<p>${fighter2.name} hits ${fighter1.name} for ${damage} damage and wins!</p>`;
+      logDiv.innerHTML = `<p>${fighter2.name} casts ${randomSpell.name} and hits ${fighter1.name} for ${damage} damage and wins!</p>`;
       return;
     }
 
-    logDiv.innerHTML = `<p>${fighter2.name} hits ${fighter1.name} for ${damage} damage!</p>`;
+    logDiv.innerHTML = `<p>${fighter2.name} casts ${randomSpell.name} and hits ${fighter1.name} for ${damage} damage!</p>`;
     currentTurn = 1;
   }
 });
