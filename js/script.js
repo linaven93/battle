@@ -64,6 +64,7 @@ function summonRandomFighters() {
   fighter2 = createFighter(characters[randomIndex2]);
 
   currentTurn = 1;
+  attackBtn.disabled = false;
 
   renderFighters();
   logDiv.innerHTML = `<p>${fighter1.name} and ${fighter2.name} are ready to battle!</p>`;
@@ -112,6 +113,8 @@ attackBtn.addEventListener("click", () => {
   }
 
   const randomSpell = spells[Math.floor(Math.random() * spells.length)];
+  const isAvada = Math.random() < 0.05; // AVADA KEDAVRA
+
   let damage = Math.floor(Math.random() * 60) + 30;
 
   if (currentTurn === 1 && fighter1.type === "Teacher") {
@@ -123,6 +126,14 @@ attackBtn.addEventListener("click", () => {
   }
 
   if (currentTurn === 1) {
+    if (isAvada) {
+      fighter2.hp = 0;
+      renderFighters();
+      logDiv.innerHTML = `<p>☠️ ${fighter1.name} casts AVADA KEDAVRA on ${fighter2.name}... instant death!</p>`;
+      attackBtn.disabled = true;
+      return;
+    }
+
     fighter2.hp -= damage;
     if (fighter2.hp < 0) fighter2.hp = 0;
 
@@ -130,12 +141,21 @@ attackBtn.addEventListener("click", () => {
 
     if (fighter2.hp === 0) {
       logDiv.innerHTML = `<p>${fighter1.name} casts ${randomSpell.name} and hits ${fighter2.name} for ${damage} damage and wins!</p>`;
+      attackBtn.disabled = true;
       return;
     }
 
     logDiv.innerHTML = `<p>${fighter1.name} casts ${randomSpell.name} and hits ${fighter2.name} for ${damage} damage!</p>`;
     currentTurn = 2;
   } else {
+    if (isAvada) {
+      fighter1.hp = 0;
+      renderFighters();
+      logDiv.innerHTML = `<p>☠️ ${fighter2.name} casts AVADA KEDAVRA on ${fighter1.name}... instant death!</p>`;
+      attackBtn.disabled = true;
+      return;
+    }
+
     fighter1.hp -= damage;
     if (fighter1.hp < 0) fighter1.hp = 0;
 
@@ -143,6 +163,7 @@ attackBtn.addEventListener("click", () => {
 
     if (fighter1.hp === 0) {
       logDiv.innerHTML = `<p>${fighter2.name} casts ${randomSpell.name} and hits ${fighter1.name} for ${damage} damage and wins!</p>`;
+      attackBtn.disabled = true;
       return;
     }
 
